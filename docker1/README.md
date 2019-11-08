@@ -493,7 +493,7 @@ yum install wget
 
 #### ⑤没有httpd
 
-![1573204503559](C:\Users\11839\AppData\Roaming\Typora\typora-user-images\1573204503559.png)
+![1573204503559](../image/101.png)
 
 **1.安装httpd服务**
 
