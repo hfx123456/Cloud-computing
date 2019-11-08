@@ -464,3 +464,69 @@ docker push 1183992583/centos:v1
 ![1573202497898](../image/d60.png)
 
 ![1573202666747](../image/d61.png)
+
+# 遇到的困难
+
+#### ① ：不能使用sudo命令 
+
+#### ②：不能使用vim，必须自己去安装vim
+
+```
+yum  -y  install  vim*
+```
+
+![1573204219307](../image/d88.png)
+
+#### ③wget不行
+
+![1573204270535](../image/d99.png)
+
+```
+yum install wget
+```
+
+#### ④ word press的网址连接不上了![1573204331115](../image/100.png)
+
+解决方法： 用虚拟机复制到docker里
+
+![1573194503563](../image/d45.png)
+
+#### ⑤没有httpd
+
+![1573204503559](C:\Users\11839\AppData\Roaming\Typora\typora-user-images\1573204503559.png)
+
+**1.安装httpd服务**
+
+```
+yum install httpd 
+```
+
+**2.重启httpd服务**
+
+```
+systemctl start httpd.service
+```
+
+**3.关闭防火墙**
+
+```
+systemctl stop iptables.service
+```
+
+#### ⑥**运行Docker容器（为了方便检测后续wordpress搭建是否成功，需设置端口映射（-p），将容器端口80 映射到主机端口8888**
+
+不然实验二做的网页会被覆盖掉
+
+```
+docker run -d -it --privileged --name wordpress -p 8888:80 -d centos:7 /usr/sbin/init
+```
+
+#### ⑦bash: service: command not found 错误
+
+```
+yum install initscripts -y
+```
+
+# 总结
+
+本次实验的docker容器里什么都没有 很多东西都得自己安装，刚开始很不习惯，后来就熟悉了，还有wordpress被墙了，只能复制原本虚拟机的安装包。
