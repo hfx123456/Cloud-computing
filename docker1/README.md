@@ -246,20 +246,20 @@ sudo yum install mariadb-server mariadb
 安装好之后，启动mariadb：
 
 ```
-sudo systemctl start mariadb
+systemctl start mariadb
 ```
 
 随后，运行简单的安全脚本以移除潜在的安全风险，启动交互脚本：
 
 ```
-sudo mysql_secure_installation
+mysql_secure_installation
 ```
 
 设置相应的root访问密码以及相关的设置(都选择Y)。
  最后设置开机启动MariaDB：
 
 ```
-sudo systemctl enable mariadb.service
+systemctl enable mariadb.service
 ```
 
 ![1573193491970](../image/d31.png)
@@ -527,6 +527,166 @@ docker run -d -it --privileged --name wordpress -p 8888:80 -d centos:7 /usr/sbin
 yum install initscripts -y
 ```
 
+# dockerfile构建wordpress
+
+#### ①：先基于centos：7 创建一个含ssh的docker镜像
+
+![1575376858089](../image/do3.png)
+
+![1575376772744](../image/do1.png)
+
+![1575376814775](../image/do2.png)
+
+```
+docker build -t 5588/centos-ssh:v1.0.0 .
+```
+
+```
+docker run -dit  -p 10022:80 5588/centos-ssh:v1.0.0
+```
+
+查看
+
+![1575426624098](../image/ssss.png)
+
+![1575376814775](../image/do4.png)
+
+连接测试
+
+![1575377354593](../image/do5.png)
+
+
+
+#### ②：基于ssh镜像再装一个apache服务的镜像
+
+![1575377551202](../image/do6.png)
+
+
+
+![1575377583487](../image/do7.png)
+
+```
+docker build -t  apache_dockerfile:centos .
+```
+
+```
+docker run -d  -p 7555:80  --privileged=true apache_dockerfile:cento /usr/sbin/init
+```
+
+查看
+
+![1575426624098](../image/ddddd.png)
+
+![1575377848744](../image/do8.png)
+
+去网页验证
+
+![1575378012803](../image/do9.png)
+
+#### ③基于apache镜像装php服务
+
+在本地主机下创建一个新目录（/data目录），用于挂载php的根目录/var/www/html，对应Dockerfile文件中定义的“VOLUME /var/www/html”。
+
+![1575380832179](../image/do100.png)
+
+![1575378365161](../image/do10.png)
+
+```
+docker build -t  test:v2 .
+```
+
+```
+docker run -dit --privileged -p 5555:80 -v /data:/var/www/html test:v2
+```
+
+查看
+
+![1575426765821](../image/qqq.png)
+
+![1575379896264](../image/do55.png)
+
+
+
+![do20](../image/do20.png)
+
+这个网页也有apache服务
+
+![1575379198359](../image/do21.png)
+
+#### ④基于php服务装wordpress
+
+![1575379782460](../image/do22.png)
+
+![1575379712427](../image/do23.png)
+
+```
+docker build -t  test:v4 .
+```
+
+```
+docker run -dit --privileged -p 1233:80  test:v4
+```
+
+查看
+
+![1575426820098](../image/wwe.png)
+
+![1575379954280](../image/do66.png)
+
+去网页查看
+
+```
+http://49.235.253.239:1233/wp-admin/setup-config.php
+```
+
+![1575380054009](../image/do111.png)
+
+#### ④安装mysql（填数据是手动的。。脚本运行不太会）
+
+![1575387971162](../image/d333.png)
+
+```
+docker build -t test:v6 .
+```
+
+![1575426885747](../image/rrr.png)
+
+![1575388574982](../image/67.png)
+
+```
+docker run -d -p 4725:80 --privileged=true test:v6 /usr/sbin/init
+```
+
+![1575388156771](../image/do61.png)
+
+设置mysql密码
+
+```
+systemctl enable mariadb.service
+```
+
+进入容器 添加用户和创数据库。。。。
+
+![1575388834599](../image/do125.png)
+
+手动改配置。。。
+
+![1575388924546](../image/do525.png)
+
+把账号密码设置一下
+
+![1573194995597](../image/wwwwr.png)
+
+大功告成!
+
+```
+http://49.235.253.239:4725/
+```
+
+![1575389206268](../image/d666.png)
+
 # 总结
 
 本次实验的docker容器里什么都没有 很多东西都得自己安装，刚开始很不习惯，后来就熟悉了，还有wordpress被墙了，只能复制原本虚拟机的安装包。
+
+dockerfile太难了 ，我用的是套娃法 ，我尽力了
